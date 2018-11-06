@@ -330,11 +330,11 @@ Puppet::Type.newtype(:firewall) do
     end
   end
 
-  newproperty(:dst_type, required_features: :address_type) do
+  newproperty(:dst_type, required_features: :address_type, array_matching: :all) do
     desc <<-PUPPETCODE
       The destination address type. For example:
 
-          dst_type => 'LOCAL'
+          dst_type => ['LOCAL']
 
       Can be one of:
 
@@ -350,19 +350,36 @@ Puppet::Type.newtype(:firewall) do
       * THROW - undocumented
       * NAT - undocumented
       * XRESOLVE - undocumented
+
+      In addition, it accepts '--limit-iface-in' and '--limit-iface-out' flags, specified as:
+
+          dst_type => ['LOCAL --limit-iface-in']
+
+      It can also be negated using '!':
+
+          dst_type => ['! LOCAL']
+
+      Will accept a single element or an array.
     PUPPETCODE
 
     newvalues(*[:UNSPEC, :UNICAST, :LOCAL, :BROADCAST, :ANYCAST, :MULTICAST,
                 :BLACKHOLE, :UNREACHABLE, :PROHIBIT, :THROW, :NAT, :XRESOLVE].map { |address_type|
-                [address_type, "! #{address_type}".to_sym]
+                [
+                  address_type,
+                  "! #{address_type}".to_sym,
+                  "#{address_type} --limit-iface-in".to_sym,
+                  "#{address_type} --limit-iface-out".to_sym,
+                  "! #{address_type} --limit-iface-in".to_sym,
+                  "! #{address_type} --limit-iface-out".to_sym,
+                ]
               }.flatten)
   end
 
-  newproperty(:src_type, required_features: :address_type) do
+  newproperty(:src_type, required_features: :address_type, array_matching: :all) do
     desc <<-PUPPETCODE
       The source address type. For example:
 
-          src_type => 'LOCAL'
+          src_type => ['LOCAL']
 
       Can be one of:
 
@@ -378,11 +395,28 @@ Puppet::Type.newtype(:firewall) do
       * THROW - undocumented
       * NAT - undocumented
       * XRESOLVE - undocumented
+
+      In addition, it accepts '--limit-iface-in' and '--limit-iface-out' flags, specified as:
+
+          src_type => ['LOCAL --limit-iface-in']
+
+      It can also be negated using '!':
+
+          src_type => ['! LOCAL']
+
+      Will accept a single element or an array.
     PUPPETCODE
 
     newvalues(*[:UNSPEC, :UNICAST, :LOCAL, :BROADCAST, :ANYCAST, :MULTICAST,
                 :BLACKHOLE, :UNREACHABLE, :PROHIBIT, :THROW, :NAT, :XRESOLVE].map { |address_type|
-                [address_type, "! #{address_type}".to_sym]
+                [
+                  address_type,
+                  "! #{address_type}".to_sym,
+                  "#{address_type} --limit-iface-in".to_sym,
+                  "#{address_type} --limit-iface-out".to_sym,
+                  "! #{address_type} --limit-iface-in".to_sym,
+                  "! #{address_type} --limit-iface-out".to_sym,
+                ]
               }.flatten)
   end
 
